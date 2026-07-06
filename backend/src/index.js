@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { Chess } from 'chess.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { error, log } from 'console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,8 +26,46 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'Chess Game' });
 });
 
-io.on('connection', (socket) => {
-    console.log('A user connected: ' + socket.id);
+io.on('connection', (socketio) => {
+    console.log('A user connected: ' + socketio.id);
+
+    if(!players.white) {
+        players.white = socketio.id;
+        socketio.emit('currentPlayer', 'white');
+    } else if(!players.black) {
+        players.black = socketio.id;
+        socketio.emit('currentPlayer', 'black');
+    } else {
+        socketio.emit('spectator');
+    }
+    socketio.on('disconnect', () => {
+        if(players.white === socketio.id) {
+            delete players.white;
+        } else if(players.black === socketio.id) {
+            delete players.black;
+        }
+    });
+
+    socketio.on('move', (move) => {
+        try {
+            if((chess.turn() === 'white' && players.white !== socketio.id) || (chess.turn() === 'black' && players.black !== socketio.id)) {
+                console.error('Not your turn!');
+                return;
+            }
+            const res = chess.move(move);
+            if(res) {
+                currentTurn = chess.turn() ;
+                io.emit('move', move);
+                io.emit('boardState', chess.fen());
+            }else{
+                console.log('Invalid move:', move);
+                socketio.emit('invalidMove', move);
+            }
+        } catch (error) {
+            console.error('Invalid move:', move);
+            socketio.emit('invalidMove', move);
+        }
+    })
 });
 
 server.listen(3000, () => {
