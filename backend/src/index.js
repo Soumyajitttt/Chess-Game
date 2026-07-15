@@ -74,9 +74,15 @@ io.on('connection', (socketio) => {
             socketio.emit('invalidMove', move);
         }
     });
+
+    socketio.on('restart', () => {
+        chess.reset();
+        io.emit('gameReset');
+        io.emit('boardState', chess.fen());
+    });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-});
+})

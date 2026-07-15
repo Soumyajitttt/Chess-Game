@@ -11,6 +11,7 @@ const trayTop = document.getElementById('trayTop');       // captured white piec
 const trayBottom = document.getElementById('trayBottom'); // captured black pieces
 const moveCounter = document.getElementById('moveCounter');
 const materialDiffEl = document.getElementById('materialDiff');
+const restartBtn = document.getElementById('restartBtn');
 
 let draggedEl = null;
 let sourceSquare = null;
@@ -286,6 +287,21 @@ socket.on('invalidMove', () => {
 
 socket.on('gameOver', (reason) => {
     setStatus(reason, { check: true });
+});
+
+socket.on('gameReset', () => {
+    lastMove = null;
+    moveCount = 0;
+    moveCounter.textContent = 'MOVE 0';
+    showToast('Game restarted');
+});
+
+// ---------------------------------------------------------------
+// Restart button
+// ---------------------------------------------------------------
+
+restartBtn.addEventListener('click', () => {
+    socket.emit('restart');
 });
 
 renderBoard();

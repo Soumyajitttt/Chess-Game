@@ -91,6 +91,12 @@ body {
     50% { opacity: 0.25; }
 }
 
+.status-row-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .role-badge {
     font-family: var(--font-mono);
     font-size: 10px;
@@ -101,6 +107,36 @@ body {
     padding: 5px 9px;
     border-radius: 3px;
     white-space: nowrap;
+}
+
+.restart-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--dim);
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.restart-btn:hover {
+    color: var(--white);
+    border-color: var(--white);
+}
+
+.restart-btn:active {
+    transform: rotate(-45deg);
+}
+
+.restart-btn:focus-visible {
+    outline: 1px solid var(--white);
+    outline-offset: 2px;
 }
 
 /* ---------- balance track (signature element) ---------- */
@@ -322,7 +358,7 @@ body {
 /* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-    .piece, .status-dot, .balance-marker, .toast { transition: none; animation: none; }
+    .piece, .status-dot, .balance-marker, .toast, .restart-btn { transition: none; animation: none; }
 }
 
 /* ---------- focus visibility ---------- */
