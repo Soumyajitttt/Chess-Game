@@ -1,0 +1,334 @@
+/* ============================================================
+   Monochrome chess — design tokens
+   Strictly grayscale. No hue anywhere, including states.
+   Type: Space Grotesk (labels) / Inter (ui) / JetBrains Mono (data)
+   ============================================================ */
+
+:root {
+    --bg: #0a0a0a;
+    --line: rgba(255, 255, 255, 0.08);
+    --line-strong: rgba(255, 255, 255, 0.16);
+
+    --white: #f5f5f5;
+    --dim: #8f8f8f;
+    --dimmer: #545454;
+
+    --square-light: #ececec;
+    --square-dark: #161616;
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-ui: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--white);
+    min-height: 100vh;
+}
+
+.stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.panel {
+    width: min(92vw, 440px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- status row ---------- */
+
+.status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--white);
+    transition: background 0.25s ease;
+}
+
+.status-dot.turn-b {
+    background: var(--dimmer);
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.status-pill.is-check .status-dot {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+}
+
+.role-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    border: 1px solid var(--line-strong);
+    padding: 5px 9px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+/* ---------- balance track (signature element) ---------- */
+/* A thin rail with a marker that slides to whichever side has the move. */
+
+.balance-track {
+    position: relative;
+    height: 1px;
+    background: var(--line);
+    margin: 18px 2px 24px;
+}
+
+.balance-marker {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--white);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 4px var(--bg);
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.35s ease;
+}
+
+.balance-marker.turn-b {
+    left: 100%;
+    background: var(--dimmer);
+    box-shadow: 0 0 0 4px var(--bg), inset 0 0 0 1px var(--line-strong);
+}
+
+/* ---------- captured trays ---------- */
+
+.tray {
+    min-height: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1px;
+    font-size: 15px;
+    opacity: 0.55;
+}
+
+.tray .chip { line-height: 1; }
+.tray .chip.white { color: var(--white); -webkit-text-stroke: 0.4px rgba(0,0,0,0.5); }
+.tray .chip.black { color: #0a0a0a; -webkit-text-stroke: 0.4px rgba(245,245,245,0.5); }
+
+/* ---------- board ---------- */
+
+.board-wrap {
+    border: 1px solid var(--line-strong);
+    line-height: 0;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.square {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.square.light { background: var(--square-light); }
+.square.dark  { background: var(--square-dark); }
+
+/* All state overlays use mix-blend-mode: difference so a single white
+   shape reads correctly regardless of the square color beneath it. */
+
+.square.is-last-move::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.32);
+    mix-blend-mode: difference;
+    pointer-events: none;
+}
+
+.square.is-check::before {
+    content: '';
+    position: absolute;
+    inset: 9%;
+    border: 2.5px solid #fff;
+    border-radius: 3px;
+    mix-blend-mode: difference;
+    pointer-events: none;
+}
+
+.square.is-dragover::after {
+    content: '';
+    position: absolute;
+    inset: 3%;
+    border: 2px solid #fff;
+    mix-blend-mode: difference;
+    pointer-events: none;
+}
+
+.square .coord-file,
+.square .coord-rank {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.square.light .coord-file, .square.light .coord-rank { color: rgba(0,0,0,0.35); }
+.square.dark  .coord-file, .square.dark  .coord-rank { color: rgba(255,255,255,0.35); }
+
+.square .coord-rank { top: 3px; left: 4px; }
+.square .coord-file { bottom: 2px; right: 5px; }
+
+/* legal-move indicators */
+
+.square .legal-dot {
+    position: absolute;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    background: #fff;
+}
+
+.square .legal-dot:not(.capture) {
+    width: 26%;
+    height: 26%;
+    border-radius: 50%;
+}
+
+.square .legal-dot.capture {
+    inset: 6%;
+    border-radius: 50%;
+    background: transparent;
+    border: 2.5px solid #fff;
+}
+
+/* ---------- pieces ---------- */
+
+.piece {
+    font-size: clamp(24px, 6vw, 40px);
+    line-height: 1;
+    user-select: none;
+    cursor: grab;
+    z-index: 2;
+    transition: transform 0.12s ease;
+}
+
+.piece.white {
+    color: var(--white);
+    -webkit-text-stroke: 0.6px rgba(0, 0, 0, 0.55);
+}
+
+.piece.black {
+    color: #0a0a0a;
+    -webkit-text-stroke: 0.6px rgba(245, 245, 245, 0.55);
+}
+
+.piece[draggable="false"] { cursor: default; }
+
+.piece:hover { transform: translateY(-1px); }
+
+.piece.is-dragging { opacity: 0.3; }
+
+/* ---------- meta row ---------- */
+
+.meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    margin-top: 6px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+}
+
+#materialDiff:empty::before {
+    content: '\2014'; /* em dash when material is even */
+    opacity: 0.5;
+}
+
+/* ---------- toast ---------- */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 12px);
+    background: var(--white);
+    color: #0a0a0a;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 420px) {
+    .panel { width: 94vw; }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .piece, .status-dot, .balance-marker, .toast { transition: none; animation: none; }
+}
+
+/* ---------- focus visibility ---------- */
+
+.piece:focus-visible,
+.square:focus-visible {
+    outline: 1px solid var(--white);
+    outline-offset: 2px;
+}

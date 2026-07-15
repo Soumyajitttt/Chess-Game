@@ -3,12 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="w-full h-screen flex justify-center items-center bg-zinc-900">
-        <div class="board w-96 h-96 bg-red-800"></div>
+    <div class="stage">
+        <div class="panel">
+
+            <div class="status-row">
+                <div class="status-pill" id="statusPill">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting&hellip;</span>
+                </div>
+                <span class="role-badge" id="roleBadge">Spectating</span>
+            </div>
+
+            <div class="balance-track" aria-hidden="true">
+                <div class="balance-marker" id="balanceMarker"></div>
+            </div>
+
+            <div class="tray" id="trayTop" aria-label="Pieces captured by Black"></div>
+
+            <div class="board-wrap">
+                <div class="board" id="board"></div>
+            </div>
+
+            <div class="tray" id="trayBottom" aria-label="Pieces captured by White"></div>
+
+            <div class="meta-row">
+                <span id="moveCounter">MOVE 0</span>
+                <span id="materialDiff"></span>
+            </div>
+
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js" integrity="sha512-8BHxHDLsOHx+flIrQ0DrZcea7MkHqRU5GbTHmbdzMRnAaoCIkZ97PqZcXJkKZckMMhqfoeaJE+DNUVuyoQsO3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
